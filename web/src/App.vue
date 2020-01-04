@@ -9,7 +9,7 @@
 				>
 			</v-toolbar-title>
 			<v-toolbar-items>
-				<v-menu offset-y v-if="drives.length">
+				<v-menu offset-y v-if="filteredDrives.length > 1">
 					<template v-slot:activator="{ on }">
 						<v-btn text v-on="on" class="text-none">
 							<v-icon>mdi-cloud</v-icon>&nbsp;{{
@@ -19,7 +19,7 @@
 					</template>
 					<v-list>
 						<v-list-item
-							v-for="(item, index) in drives"
+							v-for="(item, index) in filteredDrives"
 							:key="index.id"
 							@click="changeDrive(item.value)"
 						>
@@ -67,7 +67,19 @@ export default {
 	computed: {
 		currentDrive() {
 			const id = this.$route.query.rootId || window.props.default_root_id
-			return this.drives.find(d => d.value === id)
+			const drive = this.drives.find(d => d.value === id)
+			if (!!drive && typeof drive === "object") {
+				return drive
+			} else {
+				return { value: id, text: window.props.title, defaultSubdir: true }
+			}
+		},
+		filteredDrives() {
+			if (!!this.currentDrive.defaultSubdir) {
+				return [this.currentDrive]
+			} else {
+				return this.drives
+			}
 		}
 	},
 	async created() {
