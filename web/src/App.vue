@@ -67,7 +67,12 @@ export default {
 	computed: {
 		currentDrive() {
 			const id = this.$route.query.rootId || window.props.default_root_id
-			return this.drives.find(d => d.value === id)
+			const drive = this.drives.find(d => d.value === id)
+			if (!!drive && typeof drive === "object") {
+				return drive
+			} else {
+				return { value: id, text: window.props.title }
+			}
 		}
 	},
 	async created() {
